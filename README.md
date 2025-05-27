@@ -40,6 +40,10 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The appli
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+### Deployment
+
+The application is automatically deployed to GitHub Pages when changes are merged to the main branch. You can access the live version at: https://whatisalwaystrue.github.io/erg-pace-calculator/
+
 ## How the Calculator Works
 
 The Race Time Prediction feature uses power law models commonly used in rowing and running performance predictions. The application offers two prediction algorithms:

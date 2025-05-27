@@ -89,7 +89,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+# dist is not ignored to allow GitHub Pages to access the compiled files
 
 # Gatsby files
 .cache/
