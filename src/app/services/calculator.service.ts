@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 
+export enum PredictionAlgorithm {
+  Default = 'default',
+  PaulsLaw = 'paulsLaw'
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -75,19 +80,29 @@ export class CalculatorService {
 
   /**
    * Predict a race time for targetDistance based on a known performance
-   * (Uses a simple power law model common in running/rowing)
    * @param knownTimeSeconds Time in seconds for the known performance
    * @param knownDistanceMeters Distance in meters for the known performance
    * @param targetDistanceMeters Target distance in meters
+   * @param algorithm The prediction algorithm to use:
+   *                  - Default (1.06 exponent): Common rowing prediction model
+   *                  - Paul's Law (1.03 exponent): Alternative prediction model
    * @returns Predicted time in seconds for the target distance
    */
-  predictRaceTime(knownTimeSeconds: number, knownDistanceMeters: number, targetDistanceMeters: number): number {
+  predictRaceTime(
+    knownTimeSeconds: number, 
+    knownDistanceMeters: number, 
+    targetDistanceMeters: number,
+    algorithm: PredictionAlgorithm = PredictionAlgorithm.Default
+  ): number {
     if (knownTimeSeconds <= 0 || knownDistanceMeters <= 0 || targetDistanceMeters <= 0) {
       return 0;
     }
     
-    // This uses a power model with exponent of 1.06, which is commonly used for rowing predictions
-    const predictedSeconds = knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, 1.06);
+    // Choose exponent based on selected algorithm
+    const exponent = algorithm === PredictionAlgorithm.PaulsLaw ? 1.03 : 1.06;
+    
+    // Calculate prediction using power model with selected exponent
+    const predictedSeconds = knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, exponent);
     return predictedSeconds;
   }
 }

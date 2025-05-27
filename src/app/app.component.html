@@ -105,6 +105,21 @@
         </div>
       </div>
       
+      <div class="algorithm-selection">
+        <h3>Prediction Algorithm</h3>
+        <div class="radio-group">
+          <label *ngFor="let algorithm of predictionAlgorithms">
+            <input 
+              type="radio" 
+              name="algorithm" 
+              [value]="algorithm.id" 
+              [(ngModel)]="selectedAlgorithm"
+              (change)="predictedTime && predictRaceTime()">
+            {{ algorithm.name }}
+          </label>
+        </div>
+      </div>
+      
       <div class="actions">
         <button class="primary-button" (click)="predictRaceTime()">Predict Race Time</button>
         <button class="secondary-button" (click)="resetCalculator()">Reset</button>
