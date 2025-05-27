@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { CalculatorService } from './services/calculator.service';
+import { CalculatorService, PredictionAlgorithm } from './services/calculator.service';
 
 @Component({
   selector: 'app-root',
@@ -33,6 +33,13 @@ export class AppComponent {
   // Mode options
   calculatorModes = ['Split Calculation', 'Time Prediction'];
   selectedMode = this.calculatorModes[0];
+
+  // Prediction algorithm options
+  predictionAlgorithms = [
+    { id: PredictionAlgorithm.Default, name: 'Default (1.06 exponent)' },
+    { id: PredictionAlgorithm.PaulsLaw, name: 'Paul\'s Law' }
+  ];
+  selectedAlgorithm: PredictionAlgorithm = PredictionAlgorithm.Default;
   
   constructor(public calculatorService: CalculatorService) { }
   
@@ -56,7 +63,8 @@ export class AppComponent {
       const predictedSeconds = this.calculatorService.predictRaceTime(
         knownTimeSeconds, 
         this.knownDistance, 
-        this.targetDistance
+        this.targetDistance,
+        this.selectedAlgorithm
       );
       
       this.predictedTime = this.calculatorService.secondsToTimeString(predictedSeconds);

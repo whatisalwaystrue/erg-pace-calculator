@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 
+export enum PredictionAlgorithm {
+  Default = 'default',
+  PaulsLaw = 'paulsLaw'
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -75,19 +80,41 @@ export class CalculatorService {
 
   /**
    * Predict a race time for targetDistance based on a known performance
-   * (Uses a simple power law model common in running/rowing)
    * @param knownTimeSeconds Time in seconds for the known performance
    * @param knownDistanceMeters Distance in meters for the known performance
    * @param targetDistanceMeters Target distance in meters
+   * @param algorithm The prediction algorithm to use:
+   *                  - Default (1.06 exponent): Common rowing prediction model
+   *                  - Paul's Law: Uses formula delta_split = 5 * ln(target/known) / ln(2)
    * @returns Predicted time in seconds for the target distance
    */
-  predictRaceTime(knownTimeSeconds: number, knownDistanceMeters: number, targetDistanceMeters: number): number {
+  predictRaceTime(
+    knownTimeSeconds: number, 
+    knownDistanceMeters: number, 
+    targetDistanceMeters: number,
+    algorithm: PredictionAlgorithm = PredictionAlgorithm.Default
+  ): number {
     if (knownTimeSeconds <= 0 || knownDistanceMeters <= 0 || targetDistanceMeters <= 0) {
       return 0;
     }
     
-    // This uses a power model with exponent of 1.06, which is commonly used for rowing predictions
-    const predictedSeconds = knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, 1.06);
-    return predictedSeconds;
+    if (algorithm === PredictionAlgorithm.PaulsLaw) {
+      // Paul's Law implementation
+      // 1. Calculate the known split (pace per 500m)
+      const knownSplitSeconds = knownTimeSeconds * (500 / knownDistanceMeters);
+      
+      // 2. Calculate delta split using Paul's Law formula:
+      // delta_split = 5 * ln(target_distance / known_distance) / ln(2)
+      const deltaSplitSeconds = 5 * Math.log(targetDistanceMeters / knownDistanceMeters) / Math.log(2);
+      
+      // 3. Calculate predicted split by adding delta to known split
+      const predictedSplitSeconds = knownSplitSeconds + deltaSplitSeconds;
+      
+      // 4. Convert predicted split to total time for target distance
+      return predictedSplitSeconds * (targetDistanceMeters / 500);
+    } else {
+      // Default algorithm (1.06 exponent power model)
+      return knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, 1.06);
+    }
   }
 }
