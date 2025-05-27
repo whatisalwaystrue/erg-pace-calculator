@@ -37,7 +37,7 @@ export class AppComponent {
   // Prediction algorithm options
   predictionAlgorithms = [
     { id: PredictionAlgorithm.Default, name: 'Default (1.06 exponent)' },
-    { id: PredictionAlgorithm.PaulsLaw, name: 'Paul\'s Law (1.03 exponent)' }
+    { id: PredictionAlgorithm.PaulsLaw, name: 'Paul\'s Law' }
   ];
   selectedAlgorithm: PredictionAlgorithm = PredictionAlgorithm.Default;
   

@@ -85,7 +85,7 @@ export class CalculatorService {
    * @param targetDistanceMeters Target distance in meters
    * @param algorithm The prediction algorithm to use:
    *                  - Default (1.06 exponent): Common rowing prediction model
-   *                  - Paul's Law (1.03 exponent): Alternative prediction model
+   *                  - Paul's Law: Uses formula delta_split = 5 * ln(target/known) / ln(2)
    * @returns Predicted time in seconds for the target distance
    */
   predictRaceTime(
@@ -98,11 +98,23 @@ export class CalculatorService {
       return 0;
     }
     
-    // Choose exponent based on selected algorithm
-    const exponent = algorithm === PredictionAlgorithm.PaulsLaw ? 1.03 : 1.06;
-    
-    // Calculate prediction using power model with selected exponent
-    const predictedSeconds = knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, exponent);
-    return predictedSeconds;
+    if (algorithm === PredictionAlgorithm.PaulsLaw) {
+      // Paul's Law implementation
+      // 1. Calculate the known split (pace per 500m)
+      const knownSplitSeconds = knownTimeSeconds * (500 / knownDistanceMeters);
+      
+      // 2. Calculate delta split using Paul's Law formula:
+      // delta_split = 5 * ln(target_distance / known_distance) / ln(2)
+      const deltaSplitSeconds = 5 * Math.log(targetDistanceMeters / knownDistanceMeters) / Math.log(2);
+      
+      // 3. Calculate predicted split by adding delta to known split
+      const predictedSplitSeconds = knownSplitSeconds + deltaSplitSeconds;
+      
+      // 4. Convert predicted split to total time for target distance
+      return predictedSplitSeconds * (targetDistanceMeters / 500);
+    } else {
+      // Default algorithm (1.06 exponent power model)
+      return knownTimeSeconds * Math.pow(targetDistanceMeters / knownDistanceMeters, 1.06);
+    }
   }
 }

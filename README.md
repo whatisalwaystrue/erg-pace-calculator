@@ -25,7 +25,7 @@ A single-page web application built with Angular to help rowers calculate and pr
 2. Enter target distance
 3. Select prediction algorithm:
    - Default (1.06 exponent): Standard prediction model
-   - Paul's Law (1.03 exponent): Alternative prediction model with more conservative estimates
+   - Paul's Law: Alternative prediction model based on logarithmic split adjustments
 4. Click "Predict Race Time" to see estimated finish time and split
 
 ## Development
@@ -47,8 +47,9 @@ The Race Time Prediction feature uses power law models commonly used in rowing a
 1. **Default Algorithm**: Uses an exponent of 1.06, which has been found to be reasonably accurate for rowing ergometer performances across different distances.
    - Formula: `predicted_time = known_time * (target_distance / known_distance)^1.06`
 
-2. **Paul's Law**: Uses an exponent of 1.03, providing more conservative predictions that some athletes prefer.
-   - Formula: `predicted_time = known_time * (target_distance / known_distance)^1.03`
+2. **Paul's Law**: Uses a logarithmic model that calculates the change in split times.
+   - Formula: First calculates delta in split: `delta_split = 5 * ln(target_distance / known_distance) / ln(2)`
+   - Then adds this to the known split and converts back to total time
 
 ## License
 
