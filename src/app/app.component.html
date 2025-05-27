@@ -1,0 +1,134 @@
+<div class="container">
+  <header>
+    <h1>{{ title }}</h1>
+    <p class="subtitle">Calculate predicted race times based on your performance</p>
+  </header>
+
+  <main>
+    <div class="calculator-tabs">
+      <button 
+        *ngFor="let mode of calculatorModes" 
+        [class.active]="selectedMode === mode"
+        (click)="selectedMode = mode; resetCalculator()">
+        {{ mode }}
+      </button>
+    </div>
+
+    <div class="calculator-card" *ngIf="selectedMode === calculatorModes[0]">
+      <h2>Split Calculator</h2>
+      <div class="input-section">
+        <label>
+          Distance (meters):
+          <input type="number" [(ngModel)]="knownDistance" min="100">
+        </label>
+        
+        <div class="common-distances">
+          <p>Common distances:</p>
+          <div class="distance-buttons">
+            <button 
+              *ngFor="let distance of commonDistances" 
+              (click)="setCommonDistance(distance)"
+              [class.active]="knownDistance === distance">
+              {{ distance }}m
+            </button>
+          </div>
+        </div>
+        
+        <div class="time-inputs">
+          <label>
+            Time (MM:SS.t):
+            <input type="text" [(ngModel)]="knownTime" placeholder="e.g. 07:30.0" (blur)="calculateSplit()">
+          </label>
+          
+          <label>
+            Split (/500m):
+            <input type="text" [(ngModel)]="knownSplit" placeholder="e.g. 01:52.5" (blur)="calculateTimeFromSplit()">
+          </label>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="primary-button" (click)="calculateSplit()">Calculate Split</button>
+        <button class="primary-button" (click)="calculateTimeFromSplit()">Calculate Time</button>
+        <button class="secondary-button" (click)="resetCalculator()">Reset</button>
+      </div>
+    </div>
+
+    <div class="calculator-card" *ngIf="selectedMode === calculatorModes[1]">
+      <h2>Race Time Prediction</h2>
+      <div class="input-section">
+        <div class="known-section">
+          <h3>Known Performance</h3>
+          <label>
+            Distance (meters):
+            <input type="number" [(ngModel)]="knownDistance" min="100">
+          </label>
+          
+          <div class="common-distances">
+            <p>Common distances:</p>
+            <div class="distance-buttons">
+              <button 
+                *ngFor="let distance of commonDistances" 
+                (click)="setCommonDistance(distance)"
+                [class.active]="knownDistance === distance">
+                {{ distance }}m
+              </button>
+            </div>
+          </div>
+          
+          <label>
+            Time (MM:SS.t):
+            <input type="text" [(ngModel)]="knownTime" placeholder="e.g. 07:30.0" (blur)="calculateSplit()">
+          </label>
+          
+          <p *ngIf="knownSplit" class="split-display">Your Split: {{ knownSplit }}</p>
+        </div>
+        
+        <div class="target-section">
+          <h3>Target Distance</h3>
+          <label>
+            Distance (meters):
+            <input type="number" [(ngModel)]="targetDistance" min="100">
+          </label>
+          
+          <div class="common-distances">
+            <p>Common distances:</p>
+            <div class="distance-buttons">
+              <button 
+                *ngFor="let distance of commonDistances" 
+                (click)="setCommonDistance(distance, true)"
+                [class.active]="targetDistance === distance">
+                {{ distance }}m
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="primary-button" (click)="predictRaceTime()">Predict Race Time</button>
+        <button class="secondary-button" (click)="resetCalculator()">Reset</button>
+      </div>
+      
+      <div class="results" *ngIf="predictedTime">
+        <h3>Predicted Result for {{ targetDistance }}m:</h3>
+        <div class="result-card">
+          <div class="result-item">
+            <span class="label">Time:</span>
+            <span class="value">{{ predictedTime }}</span>
+          </div>
+          <div class="result-item">
+            <span class="label">Split:</span>
+            <span class="value">{{ predictedSplit }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Rowing Erg Pace Calculator &copy; {{ currentYear }}</p>
+  </footer>
+</div>
+
+<router-outlet></router-outlet>
